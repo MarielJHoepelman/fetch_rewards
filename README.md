@@ -6,7 +6,7 @@ Web service that accepts HTTP requests and returns responses in JSON format.
 
 ## Assumptions
 
-Asssuming that users, payers and their relationships already exist in database; and that authentication and authorization has been already handled by the system, this api only deals with an abstraction of the points related transactions.
+Assuming that users, payers and their relationships already exist in database; and that authentication and authorization has been already handled by the system, this api only deals with an abstraction of the points related transactions.
 
 ## Usage
 
