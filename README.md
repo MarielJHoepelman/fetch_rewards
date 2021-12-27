@@ -7,6 +7,7 @@ Web service that accepts HTTP requests and returns responses in JSON format.
 ## Assumptions
 
 Assuming that users, payers and their relationships already exist in database; and that authentication and authorization has been already handled by the system, this api only deals with an abstraction of the points related transactions.
+All `spend` transactions will be debited with the total amount of points available from the payers, even if the amount requested is greater than the available points.
 
 ## Usage
 

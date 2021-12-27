@@ -1,4 +1,5 @@
 class PointsController < ApplicationController
+
   def balance
     balance = Point.calculate_balance
 
@@ -6,7 +7,13 @@ class PointsController < ApplicationController
   end
 
   def add
-    Point.create(add_points_params)
+    transaction = Point.create(add_points_params)
+
+    if transaction.valid?
+      render json: transaction
+    else
+      render json: transaction.errors, status: 400
+    end
   end
 
   def spend

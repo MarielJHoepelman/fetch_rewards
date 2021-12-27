@@ -5,6 +5,7 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
+Point.delete_all
 
 Point.create([{ payer: "DANNON", points: 1000, timestamp: "2020-11-02T14:00:00Z" },
   { payer: "UNILEVER", points: 200, timestamp: "2020-10-31T11:00:00Z" },
