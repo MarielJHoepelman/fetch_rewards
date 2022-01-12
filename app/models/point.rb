@@ -1,6 +1,8 @@
 class Point < ApplicationRecord
   validates :payer, :points, :timestamp, presence: true
   validates :points, numericality: true
+  # validates :points, numericality: {greater_than: 0}
+  # Does not work with negative entry in instructions example, application breaks at creation phase.
 
   # Calculates the available points to spend group by payer.
   # Returns:
@@ -19,7 +21,6 @@ class Point < ApplicationRecord
         balance[entry[:payer]] = entry[:points]
       end
     end
-
     balance
   end
 
@@ -33,34 +34,40 @@ class Point < ApplicationRecord
 
   def self.spend_points(params)
     result = []
-    points_to_spend = params[:points].to_i
+    request = params[:points].to_i
 
     # Iterates through list of records ordered from oldes to newest.
     self.order(:timestamp).each do |transaction_record|
       # Keeps track that there is more points to spend from request.
-      if points_to_spend > 0
+      if request > 0
         # Determines if amount to be deducted is the total amount of points available
         # or a portion of points in record.
-        points_to_deduct = points_to_spend > transaction_record[:points] ? transaction_record[:points] : points_to_spend
+        points_to_deduct = request > transaction_record[:points] ? transaction_record[:points] : request
         # Searches if an entry has been already entered into result histogram.
         current_entry = result.find { |e| e[:payer] == transaction_record[:payer] }
         if current_entry
         # If entry already exists in histogram, adds points to deduct to previous amount.
-          current_entry[:points] += points_to_deduct
+          current_entry[:points] += points_to_deduct * -1
         else
         # If entry is not in result array, adds it as a new entry.
           result << {
             :payer => transaction_record[:payer],
-            :points => points_to_deduct
+            :points => points_to_deduct * -1
           }
         end
         # Substracts deducted points to total points to spend.
-        points_to_spend -= transaction_record[:points]
+        request -= transaction_record[:points]
         # Mutates the record from where the points have been deducted.
         transaction_record.update(:points => transaction_record[:points] - points_to_deduct)
       end
     end
     # Returns object with all points spent by payer.
     result
+  end
+
+  def self.calculate_global_balance
+    self.all.reduce(0) do |sum, transaction|
+      sum + transaction.points
+    end
   end
 end
