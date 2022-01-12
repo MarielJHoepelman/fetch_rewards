@@ -1,9 +1,7 @@
 class PointsController < ApplicationController
 
   def balance
-    balance = Point.calculate_balance
-
-    render json: balance
+    render json: Point.calculate_balance
   end
 
   def add
@@ -17,14 +15,11 @@ class PointsController < ApplicationController
   end
 
   def spend
-    result = Point.spend_points(spend_points_params).map do |entry|
-      {
-        :payer => entry[:payer],
-        :points=> entry[:points] * -1
-      }
+    if Point.calculate_global_balance == 0
+      render json: {error: "this account does not have points available to spend"}, status: 400
+    else
+      render json: Point.spend_points(spend_points_params)
     end
-
-    render json: result
   end
 
   private
@@ -36,4 +31,5 @@ class PointsController < ApplicationController
   def spend_points_params
     params.permit(:points)
   end
+
 end
